@@ -1,0 +1,7 @@
+pip modules needed:
+tensorflow
+pygame
+numpy
+opencv-python
+
+And you need a camara to controlle the pong game
