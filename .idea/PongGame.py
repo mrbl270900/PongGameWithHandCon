@@ -82,7 +82,7 @@ while running: #her startes vores whille loop
     # Show the frame
     cv2.imshow('Frame', frame)
 
-    #Her fylder vi bagunden med hvid
+    #Her fylder vi bagunden med sort
     screen.fill((0,0,0))
     #herunder ser vi på vores models output og ændre y værdien for paddlen i pog spillet
     if result == 1:
