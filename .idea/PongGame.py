@@ -34,6 +34,7 @@ labels = gen_labels()
 pygame.init() #her intitere vi vores pygame samt vores fonter
 pygame.font.init()
 my_font = pygame.font.SysFont('Helvetica', 20)
+#Her sætter vi vores værdier som anvendes i spillet
 hight = 300
 width = 500
 size_paddle_y = 50
@@ -48,6 +49,7 @@ speed_y = 5
 count = 10
 y1 = 0
 bounce = 0
+#her sætter vi vores værdier som skal anvendes til logging
 loged = False
 logging.basicConfig(filename='data.log', level=logging.DEBUG)
 
@@ -80,42 +82,54 @@ while running: #her startes vores whille loop
     # Show the frame
     cv2.imshow('Frame', frame)
 
-
+    #Her fylder vi bagunden med hvid
     screen.fill((0,0,0))
+    #herunder ser vi på vores models output og ændre y værdien for paddlen i pog spillet
     if result == 1:
         y1 = y1 + 10
     elif result == 2:
         y1 = y1 - 10
 
+    # her sikkre vi os at vores spiller paddle ikke er ude af spille overfladen
     if y1 > hight-size_paddle_y:
         y1 = hight-size_paddle_y
     elif y1 < 1:
         y1 = 1
 
+    #her tegner vi vores tekst og padler
     pygame.draw.rect(screen, color, pygame.Rect(1,y1,size_paddle_x,size_paddle_y))
     pygame.draw.rect(screen, color, pygame.Rect(width-size_paddle_x,xy_c[1]-(size_paddle_y/2),size_paddle_x,size_paddle_y))
     bounce_text = my_font.render(str(bounce) + " Bounces", False, color)
     screen.blit(bounce_text,(width/2 - 30,25))
 
+    #her ændre vi vores bolds position
     xy_c[0] = xy_c[0] + speed_x
     xy_c[1] = xy_c[1] + speed_y
 
+    # her bouncer vi bolden hvis den rammer loftet eller jorden i spillet
     if xy_c[1] > hight-size_ball or xy_c[1] < 0+size_ball:
         speed_y=speed_y*(-1)
 
+    #her tegnes bolden
     pygame.draw.circle(screen, color, xy_c,size_ball)
 
+    #her bouncer vi bolden hvis den rammer den ene paddle og at den ikke har ramt padlen inde for 10 frames
+    #vi har valgt at includere det med 10 frams da vi så bugs med at den bouncede 2 gange elleres
     if xy_c[0]+size_ball > width-size_paddle_x and count < 0:
         if xy_c[1]-size_ball < xy_c[1]+size_paddle_y and xy_c[1]+size_ball > xy_c[1]:
             speed_x = speed_x * (-1)
             count = 10
 
+    # samme som over bare med den anden paddle
     if xy_c[0]-size_ball < 1+size_paddle_x and count < 0:
         if xy_c[1]-size_ball < y1+size_paddle_y and xy_c[1]+size_ball > y1:
             speed_x = speed_x * (-1)
             count = 10
             bounce = bounce + 1
 
+
+    #Her chekker vi om bolden er ude af spille overfladen og hvis den er loger vi antal bounces og resetter pogrammet
+    #Hvis spilleren trykker på mussen
     if xy_c[0]+size_ball > width+1 or xy_c[0]-size_ball < 0-1:
         if loged == False:
             logging.info("You got " + str(bounce) + " Bounces")
@@ -134,11 +148,14 @@ while running: #her startes vores whille loop
                 count = 10
                 loged = False
                 bounce = 0
+    #her tæller vi ned for at se om der er gået 10 frames
     count = count - 1
 
+    #her displayer vi pygame skræmen
     pygame.display.flip()
     for event in pygame.event.get(): # dette bruges til at stoppe pogramet når man trykker på krydset i pygame vinduet
         if event.type == pygame.QUIT:
             running = False
+#dette slukker for kamaraet og sliper billedet fra cv2
 image.release()
 cv2.destroyAllWindows()
